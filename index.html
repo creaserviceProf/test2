@@ -52,7 +52,6 @@
     }
 
     .card {
-      background-color: #c5ffc5;
       border-radius: 10px;
       padding: 15px;
       text-align: center;
@@ -121,8 +120,7 @@
   <div class="dashboard">
     <div class="header">
       <h1>Dashboard</h1>
-      <!-- Replace bell icon with binary-based image -->
-      <img src="data:image/png;base64,5249464690170000574542505650382084170000d066009d012af80018013e31168a43a2212112988d6c200304b3b775b019ac6626a86b07d53f173f70bfe1728cf65ff67bb148ebfa1deaffdd3f273fd1f0007e887f74fc9eede5e603f56ffdf7f91f790fe93ea27fc6fa807f26feafd629e81bfadbe965ff67fcbfc16fecb7fe0ff0bf01dfca3fb07df7eca4f92bfb6765dfd3ff24bfac767bf7b3d80e4c5e6be057f12faadf6bfee1fb67f98bf7f3f6fff4fe0efaa2f502fc43f8e7f76febffb67fde3f6978ebed1fa017b73f41fef1fdb7f6affaefee1fb6e7f1de85fd89ff5bee01fcc3f9f7f91fcc4fedbffd3deb7fd578b0fd8be403ec" alt="Binary Icon">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABnElEQVR4nJ2TTUtCQRDGf2dBoG1vpdSjaIGYjUTWbt3cQtgho2PhB4AqFiBKFXiiLiSUbIkFP0BbpAxCU1JAxlEqSxiUEkv72F2DYwskk03bsxnvbd7313r2ECWAQlAEqgeMTDrCPQfYblLQQ5y/F3DvmBsZo4DiQBAkoVoLsRuIG6r+XQHBXiB8tqa9qjhuUSBUACiFftnDrDbBQ7/V6aBPABK9UamAQb8DsnIdb60FWsHyHWsdgDpVBJ5H3CBxfHkHNiYZDL4djdF+vJ4JZNRVnHepDI9ZxYBXvhfAIlhUlFAlTgAKob3wFwDvAogXjWDwLUEhJ54Uw6bSu3htWSBEq0McBzgDtiwRlKgVPCosJRXWgPUKL1vDi3UABJIXCUtdQQlLK8D7Lt2g+gBAs0AKUTvgGk2R26mMCfBPfG5kmTbBWaN+mbTJo6yQSNsA+DyEalGyBSFbIWCiIi2E5aRoEiHByi+RSilRkRSM/h+wgUnB68xapwvD3FubJvhsfN5t/bkXv8EWHMi6N9wDUAAAAASUVORK5CYII=" alt="Bell Icon">
     </div>
     <div class="project-summary">
       <div class="card">
@@ -157,5 +155,23 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Function to generate a random color
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Apply random colors to each card
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.style.backgroundColor = getRandomColor();
+    });
+  </script>
 </body>
 </html>
