@@ -7,8 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: url('./images/detailed_v4@2x.jpg') center center no-repeat;
-      background-size: cover;
+      background-color: #f6e9ff;
       margin: 0;
       padding: 0;
       display: flex;
@@ -19,11 +18,10 @@
 
     .dashboard {
       width: 375px;
-      background: rgba(0, 0, 0, 0.7);
+      background-color: #fff;
       border-radius: 20px;
       padding: 20px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(5px);
     }
 
     .header {
@@ -38,9 +36,8 @@
       margin: 0;
     }
 
-    .header img {
-      width: 24px;
-      height: 24px;
+    .header .bell {
+      font-size: 24px;
       cursor: pointer;
     }
 
@@ -52,50 +49,36 @@
     }
 
     .card {
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-      color: #333;
       position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .card h2 {
-      font-size: 20px;
-      margin: 0;
-    }
-
-    .card p {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .project-statistics {
-      margin-top: 20px;
-    }
-
-    .project-statistics h2 {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .stats-bar {
       width: 100%;
-      height: 150px;
-      background: url('./images/bar-graph.webp') center center no-repeat;
-      background-size: cover;
+      height: 150px; /* Adjust as needed */
+      background: url('detailed_v4@2x.jpg') no-repeat center center;
+      background-size: cover; /* Ensures the image scales to cover the card dimensions */
       border-radius: 10px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white; /* Ensures text is visible */
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
     }
 
-    .stats-bar:hover {
-      transform: scale(1.05);
-      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    .card h2, .card p {
+      z-index: 2;
+      position: relative;
+      text-align: center;
+    }
+
+    .card-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Optional overlay for readability */
+      z-index: 1;
     }
 
     .footer {
@@ -120,10 +103,11 @@
   <div class="dashboard">
     <div class="header">
       <h1>Dashboard</h1>
-      <img src="./images/notification-icon-logo-bell-vector-260nw-1583267365 (1).webp" alt="Bell Icon">
+      <span class="bell">🔔</span>
     </div>
     <div class="project-summary">
       <div class="card">
+        <div class="card-overlay"></div>
         <h2>24</h2>
         <p>In Progress</p>
       </div>
@@ -140,10 +124,6 @@
         <p>Completed</p>
       </div>
     </div>
-    <div class="project-statistics">
-      <h2>Project Statistics</h2>
-      <div class="stats-bar"></div>
-    </div>
     <div class="footer">
       <div>
         <span>50:25:06</span>
@@ -155,23 +135,5 @@
       </div>
     </div>
   </div>
-
-  <script>
-    // Function to generate a random color
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
-
-    // Apply random colors to each card
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-      card.style.backgroundColor = getRandomColor();
-    });
-  </script>
 </body>
 </html>
