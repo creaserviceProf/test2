@@ -8,7 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       background: url('./images/detailed_v4@2x.jpg') center center no-repeat;
-      background-size: cover; /* Ensures the image covers the entire viewport */
+      background-size: cover;
       margin: 0;
       padding: 0;
       display: flex;
@@ -17,13 +17,13 @@
       min-height: 100vh;
     }
 
-   .dashboard {
+    .dashboard {
       width: 375px;
-      background: rgba(255, 255, 255, 0.7); /* White background with 70% transparency */
+      background: rgba(255, 255, 255, 0.7);
       border-radius: 20px;
       padding: 20px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px); /* Apply blur effect */
+      backdrop-filter: blur(10px);
     }
 
     .header {
@@ -38,8 +38,9 @@
       margin: 0;
     }
 
-    .header .bell {
-      font-size: 24px;
+    .header img {
+      width: 24px;
+      height: 24px;
       cursor: pointer;
     }
 
@@ -51,7 +52,7 @@
     }
 
     .card {
-      background-color: #c5ffc5; /* Set all cards to green */
+      background-color: #c5ffc5;
       border-radius: 10px;
       padding: 15px;
       text-align: center;
@@ -70,7 +71,6 @@
       color: #666;
     }
 
-    /* Rollover Effect for Cards */
     .card:hover {
       transform: scale(1.05);
       box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
@@ -94,7 +94,6 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Rollover Effect for Stats Bar */
     .stats-bar:hover {
       transform: scale(1.05);
       box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
@@ -122,7 +121,8 @@
   <div class="dashboard">
     <div class="header">
       <h1>Dashboard</h1>
-      <span class="bell">🔔</span>
+      <!-- Replace bell icon with binary-based image -->
+      <img src="data:image/png;base64,5249464690170000574542505650382084170000d066009d012af80018013e31168a43a2212112988d6c200304b3b775b019ac6626a86b07d53f173f70bfe1728cf65ff67bb148ebfa1deaffdd3f273fd1f0007e887f74fc9eede5e603f56ffdf7f91f790fe93ea27fc6fa807f26feafd629e81bfadbe965ff67fcbfc16fecb7fe0ff0bf01dfca3fb07df7eca4f92bfb6765dfd3ff24bfac767bf7b3d80e4c5e6be057f12faadf6bfee1fb67f98bf7f3f6fff4fe0efaa2f502fc43f8e7f76febffb67fde3f6978ebed1fa017b73f41fef1fdb7f6affaefee1fb6e7f1de85fd89ff5bee01fcc3f9f7f91fcc4fedbffd3deb7fd578b0fd8be403ec" alt="Binary Icon">
     </div>
     <div class="project-summary">
       <div class="card">
