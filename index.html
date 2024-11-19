@@ -56,45 +56,12 @@
       color: #333;
       position: relative;
       overflow: hidden;
-      border: 2px dashed #666; /* Cadre en pointillé */
+      border: 2px dashed #666;
+      cursor: move; /* Indicates draggable items */
     }
 
-    .card h2, .card p {
-      position: relative; /* Keeps text above the animated background */
-      z-index: 2;
-    }
-
-    .card:nth-child(1)::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0; /* Start with no fill */
-      height: 100%;
-      background-color: #ffd5f7; /* Second color */
-      z-index: 1; /* Behind the text */
-      animation: fillGauge 4s infinite linear;
-    }
-
-    @keyframes fillGauge {
-      0% {
-        width: 0; /* Start empty */
-      }
-      100% {
-        width: 100%; /* Fill the entire card */
-      }
-    }
-
-    .card:nth-child(2) {
-      background-color: #ffd5f7;
-    }
-
-    .card:nth-child(3) {
-      background-color: #ffe8b2;
-    }
-
-    .card:nth-child(4) {
-      background-color: #c5ffc5;
+    .card.dragging {
+      opacity: 0.5;
     }
 
     .project-statistics {
@@ -131,28 +98,78 @@
       font-weight: bold;
       display: block;
     }
+
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .toggle-container label {
+      cursor: pointer;
+    }
+
+    .toggle-container input[type="checkbox"] {
+      display: none;
+    }
+
+    .toggle-container span {
+      display: inline-block;
+      background-color: #ccc;
+      border-radius: 15px;
+      width: 50px;
+      height: 25px;
+      position: relative;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-container span::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2.5px;
+      left: 2.5px;
+      transition: left 0.3s;
+    }
+
+    .toggle-container input[type="checkbox"]:checked + span {
+      background-color: #4caf50;
+    }
+
+    .toggle-container input[type="checkbox"]:checked + span::after {
+      left: 27.5px;
+    }
   </style>
 </head>
 <body>
   <div class="dashboard">
+    <div class="toggle-container">
+      <label>
+        <input type="checkbox" id="edit-toggle">
+        <span></span>
+      </label>
+    </div>
     <div class="header">
       <h1>Dashboard</h1>
       <span class="bell">🔔</span>
     </div>
     <div class="project-summary">
-      <div class="card">
+      <div class="card" draggable="false">
         <h2>24</h2>
         <p>In Progress</p>
       </div>
-      <div class="card">
+      <div class="card" draggable="false">
         <h2>56</h2>
         <p>In Review</p>
       </div>
-      <div class="card">
+      <div class="card" draggable="false">
         <h2>16</h2>
         <p>On Hold</p>
       </div>
-      <div class="card">
+      <div class="card" draggable="false">
         <h2>45</h2>
         <p>Completed</p>
       </div>
@@ -172,5 +189,66 @@
       </div>
     </div>
   </div>
+
+  <script>
+    const editToggle = document.getElementById('edit-toggle');
+    const cards = document.querySelectorAll('.card');
+
+    let currentDrag = null;
+
+    editToggle.addEventListener('change', () => {
+      const isEditable = editToggle.checked;
+
+      cards.forEach(card => {
+        card.setAttribute('draggable', isEditable);
+        card.style.cursor = isEditable ? 'move' : 'default';
+
+        if (isEditable) {
+          card.addEventListener('dragstart', handleDragStart);
+          card.addEventListener('dragend', handleDragEnd);
+        } else {
+          card.removeEventListener('dragstart', handleDragStart);
+          card.removeEventListener('dragend', handleDragEnd);
+        }
+      });
+    });
+
+    function handleDragStart(event) {
+      currentDrag = event.target;
+      event.target.classList.add('dragging');
+    }
+
+    function handleDragEnd(event) {
+      currentDrag = null;
+      event.target.classList.remove('dragging');
+    }
+
+    const projectSummary = document.querySelector('.project-summary');
+    projectSummary.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      if (currentDrag) {
+        const afterElement = getDragAfterElement(projectSummary, event.clientY);
+        if (afterElement == null) {
+          projectSummary.appendChild(currentDrag);
+        } else {
+          projectSummary.insertBefore(currentDrag, afterElement);
+        }
+      }
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+  </script>
 </body>
 </html>
