@@ -48,42 +48,30 @@
       margin-bottom: 20px;
     }
 
-    .card {
-      background-color: #f3f4f8;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-      color: #333;
-      position: relative;
-      overflow: hidden;
-      border: 2px dashed #666;
-      cursor: default;
-    }
+  .card {
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    color: #333;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: background-color 0.3s, border 0.3s;
+    border: none; /* Default: no border */
+    user-select: none; /* Prevents text selection */
+  }
+
+  .card.dotted {
+    border: 2px dashed #666; /* Dashed border for toggle on */
+  }
 
     .card h2, .card p {
       position: relative;
       z-index: 2;
     }
 
-    .card:nth-child(1)::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 100%;
+    .card:nth-child(1) {
       background-color: #ffd5f7;
-      z-index: 1;
-      animation: fillGauge 4s infinite linear;
-    }
-
-    @keyframes fillGauge {
-      0% {
-        width: 0;
-      }
-      100% {
-        width: 100%;
-      }
     }
 
     .card:nth-child(2) {
@@ -96,6 +84,10 @@
 
     .card:nth-child(4) {
       background-color: #c5ffc5;
+    }
+
+    .card.grayed {
+      background-color: #d3d3d3 !important;
     }
 
     .dragging {
@@ -194,19 +186,19 @@
       <span class="bell">🔔</span>
     </div>
     <div class="project-summary">
-      <div class="card" draggable="false">
+      <div class="card">
         <h2>24</h2>
         <p>In Progress</p>
       </div>
-      <div class="card" draggable="false">
+      <div class="card">
         <h2>56</h2>
         <p>In Review</p>
       </div>
-      <div class="card" draggable="false">
+      <div class="card">
         <h2>16</h2>
         <p>On Hold</p>
       </div>
-      <div class="card" draggable="false">
+      <div class="card">
         <h2>45</h2>
         <p>Completed</p>
       </div>
@@ -227,67 +219,69 @@
     </div>
   </div>
 
-  <script>
-    const editToggle = document.getElementById('edit-toggle');
-    const cards = document.querySelectorAll('.card');
+  </style>
 
-    let currentDrag = null;
+<script>
+  const editToggle = document.getElementById('edit-toggle');
+  const cards = document.querySelectorAll('.card');
 
-    editToggle.addEventListener('change', () => {
-      const isEditable = editToggle.checked;
+  let currentDrag = null;
 
-      cards.forEach(card => {
-        card.setAttribute('draggable', isEditable);
-        card.style.cursor = isEditable ? 'move' : 'default';
+  editToggle.addEventListener('change', () => {
+    const isEditable = editToggle.checked;
 
-        if (isEditable) {
-          card.addEventListener('dragstart', handleDragStart);
-          card.addEventListener('dragend', handleDragEnd);
-          card.classList.remove('animation-disabled'); // Enable moving
-        } else {
-          card.removeEventListener('dragstart', handleDragStart);
-          card.removeEventListener('dragend', handleDragEnd);
-          card.classList.add('animation-disabled'); // Restore animation
-        }
-      });
-    });
+    cards.forEach(card => {
+      card.setAttribute('draggable', isEditable);
+      card.style.cursor = isEditable ? 'move' : 'default';
 
-    function handleDragStart(event) {
-      currentDrag = event.target;
-      event.target.classList.add('dragging');
-    }
-
-    function handleDragEnd(event) {
-      currentDrag = null;
-      event.target.classList.remove('dragging');
-    }
-
-    const projectSummary = document.querySelector('.project-summary');
-    projectSummary.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      if (currentDrag) {
-        const afterElement = getDragAfterElement(projectSummary, event.clientY);
-        if (afterElement == null) {
-          projectSummary.appendChild(currentDrag);
-        } else {
-          projectSummary.insertBefore(currentDrag, afterElement);
-        }
+      if (isEditable) {
+        card.classList.add('grayed', 'dotted'); // Grey out cards and add dotted border
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+      } else {
+        card.classList.remove('grayed', 'dotted'); // Restore original colors and remove dotted border
+        card.removeEventListener('dragstart', handleDragStart);
+        card.removeEventListener('dragend', handleDragEnd);
       }
     });
+  });
 
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+  function handleDragStart(event) {
+    currentDrag = event.target;
+    event.target.classList.add('dragging');
+  }
 
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
+  function handleDragEnd(event) {
+    currentDrag = null;
+    event.target.classList.remove('dragging');
+  }
+
+  const projectSummary = document.querySelector('.project-summary');
+  projectSummary.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    if (currentDrag) {
+      const afterElement = getDragAfterElement(projectSummary, event.clientY);
+      if (afterElement == null) {
+        projectSummary.appendChild(currentDrag);
+      } else {
+        projectSummary.insertBefore(currentDrag, afterElement);
+      }
     }
-  </script>
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+</script>
 </body>
 </html>
