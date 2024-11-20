@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard UI</title>
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,7 +38,8 @@
     }
 
     .header .bell {
-      font-size: 24px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
     }
 
@@ -48,28 +50,19 @@
       margin-bottom: 20px;
     }
 
-  .card {
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    color: #333;
-    position: relative;
-    overflow: hidden;
-    cursor: default;
-    transition: background-color 0.3s, border 0.3s;
-    border: none; /* Default: no border */
-    user-select: none; /* Prevents text selection */
-  }
-
-  .card.dotted {
-    border: 2px dashed #666; /* Dashed border for toggle on */
-  }
-
-    .card h2, .card p {
+    .card {
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      color: #333;
       position: relative;
-      z-index: 2;
+      overflow: hidden;
+      cursor: default;
+      transition: background-color 0.3s, border 0.3s;
+      user-select: none; /* Prevents text selection */
     }
 
+    /* Original card colors */
     .card:nth-child(1) {
       background-color: #ffd5f7;
     }
@@ -86,8 +79,14 @@
       background-color: #c5ffc5;
     }
 
+    /* Grey out when toggle is on */
     .card.grayed {
       background-color: #d3d3d3 !important;
+    }
+
+    /* Dotted border when toggle is on */
+    .card.dotted {
+      border: 2px dashed #666;
     }
 
     .dragging {
@@ -183,7 +182,16 @@
     </div>
     <div class="header">
       <h1>Dashboard</h1>
-      <span class="bell">🔔</span>
+      <!-- Replace the bell icon with Lottie animation -->
+      <dotlottie-player 
+        id="bell-animation"
+        class="bell" 
+        src="https://lottie.host/14fccbd6-6ce6-4744-9489-c62dc52ee7ef/dzQiB5ayBl.lottie" 
+        background="transparent" 
+        speed="1"
+        autoplay="false"
+        loop="false">
+      </dotlottie-player>
     </div>
     <div class="project-summary">
       <div class="card">
@@ -219,69 +227,36 @@
     </div>
   </div>
 
-  </style>
+  <script>
+    const editToggle = document.getElementById('edit-toggle');
+    const cards = document.querySelectorAll('.card');
+    const bellAnimation = document.getElementById('bell-animation');
 
-<script>
-  const editToggle = document.getElementById('edit-toggle');
-  const cards = document.querySelectorAll('.card');
+    // Toggle card appearance and behavior
+    editToggle.addEventListener('change', () => {
+      const isEditable = editToggle.checked;
 
-  let currentDrag = null;
+      cards.forEach(card => {
+        card.setAttribute('draggable', isEditable);
+        card.style.cursor = isEditable ? 'move' : 'default';
 
-  editToggle.addEventListener('change', () => {
-    const isEditable = editToggle.checked;
-
-    cards.forEach(card => {
-      card.setAttribute('draggable', isEditable);
-      card.style.cursor = isEditable ? 'move' : 'default';
-
-      if (isEditable) {
-        card.classList.add('grayed', 'dotted'); // Grey out cards and add dotted border
-        card.addEventListener('dragstart', handleDragStart);
-        card.addEventListener('dragend', handleDragEnd);
-      } else {
-        card.classList.remove('grayed', 'dotted'); // Restore original colors and remove dotted border
-        card.removeEventListener('dragstart', handleDragStart);
-        card.removeEventListener('dragend', handleDragEnd);
-      }
+        if (isEditable) {
+          card.classList.add('grayed', 'dotted'); // Grey out cards and add dotted border
+        } else {
+          card.classList.remove('grayed', 'dotted'); // Restore original colors and remove dotted border
+        }
+      });
     });
-  });
 
-  function handleDragStart(event) {
-    currentDrag = event.target;
-    event.target.classList.add('dragging');
-  }
+    // Play Lottie animation on hover
+    bellAnimation.addEventListener('mouseenter', () => {
+      bellAnimation.play();
+    });
 
-  function handleDragEnd(event) {
-    currentDrag = null;
-    event.target.classList.remove('dragging');
-  }
-
-  const projectSummary = document.querySelector('.project-summary');
-  projectSummary.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    if (currentDrag) {
-      const afterElement = getDragAfterElement(projectSummary, event.clientY);
-      if (afterElement == null) {
-        projectSummary.appendChild(currentDrag);
-      } else {
-        projectSummary.insertBefore(currentDrag, afterElement);
-      }
-    }
-  });
-
-  function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
-
-    return draggableElements.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
-      } else {
-        return closest;
-      }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-</script>
+    // Stop Lottie animation on mouse leave
+    bellAnimation.addEventListener('mouseleave', () => {
+      bellAnimation.stop();
+    });
+  </script>
 </body>
 </html>
