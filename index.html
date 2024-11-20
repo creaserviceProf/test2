@@ -57,10 +57,48 @@
       position: relative;
       overflow: hidden;
       border: 2px dashed #666;
-      cursor: move; /* Indicates draggable items */
+      cursor: default;
     }
 
-    .card.dragging {
+    .card h2, .card p {
+      position: relative;
+      z-index: 2;
+    }
+
+    .card:nth-child(1)::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background-color: #ffd5f7;
+      z-index: 1;
+      animation: fillGauge 4s infinite linear;
+    }
+
+    @keyframes fillGauge {
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
+    }
+
+    .card:nth-child(2) {
+      background-color: #ffd5f7;
+    }
+
+    .card:nth-child(3) {
+      background-color: #ffe8b2;
+    }
+
+    .card:nth-child(4) {
+      background-color: #c5ffc5;
+    }
+
+    .dragging {
       opacity: 0.5;
     }
 
@@ -79,7 +117,6 @@
       background: url('https://www.cambridgemaths.org/Images/The-trouble-with-graphs.jpg') center center no-repeat;
       background-size: cover;
       border-radius: 10px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .footer {
@@ -206,9 +243,11 @@
         if (isEditable) {
           card.addEventListener('dragstart', handleDragStart);
           card.addEventListener('dragend', handleDragEnd);
+          card.classList.remove('animation-disabled'); // Enable moving
         } else {
           card.removeEventListener('dragstart', handleDragStart);
           card.removeEventListener('dragend', handleDragEnd);
+          card.classList.add('animation-disabled'); // Restore animation
         }
       });
     });
