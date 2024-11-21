@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Dashboard</title>
+  <style>
+    /* General body styles */
+    body {
+      background-color: #f6e9ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
 
+    /* Dashboard container */
+    .dashboard {
+      width: 375px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      position: relative;
+      cursor: grab;
+    }
+
+    .dashboard:active {
+      cursor: grabbing;
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .toggle-switch input {
+      display: none;
+    }
+
+    .toggle-switch .slider {
+      width: 40px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 15px;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+    }
+
+    .toggle-switch .slider:before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      transition: all 0.3s;
+    }
+
+    .toggle-switch input:checked + .slider:before {
+      left: 20px;
+    }
+
+    .toggle-switch input:checked + .slider {
+      background-color: #4caf50;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 10px 0;
+    }
+
+    .bell {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+    }
+
+    /* Project summary */
+    .project-summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card span {
+      font-size: 12px;
+      font-weight: normal;
+      color: #777;
+    }
+
+    .gauge {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: conic-gradient(#4caf50 75%, #ccc 75%);
+      margin: 0 auto 10px;
+    }
+
+    /* Statistics section */
+    .statistics img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .footer span {
+      font-weight: bold;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.1/lottie.min.js"></script>
+</head>
+<body>
+  <div id="dashboard-container" class="dashboard">
+    <div class="toggle-switch">
+      <label>
+        <input type="checkbox" id="toggle-draggable">
+        <span class="slider"></span>
+        Toggle Draggable
+      </label>
+    </div>
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div id="bell-animation" class="bell"></div>
+    </div>
+    <div class="project-summary">
+      <div class="card" id="card1">
+        <div class="gauge"></div>
+        <p>24<br><span>In Progress</span></p>
+      </div>
+      <div class="card">12<br><span>Completed</span></div>
+      <div class="card">8<br><span>Pending</span></div>
+      <div class="card">5<br><span>Blocked</span></div>
+    </div>
+    <div class="statistics">
+      <img src="https://via.placeholder.com/300x150" alt="Statistics Placeholder" />
+    </div>
+    <div class="footer">
+      <p>Total Working Hours: <span>120h</span></p>
+      <p>Total Tasks: <span>49</span></p>
+    </div>
+  </div>
+  <script>
+    // Variables for dragging functionality
+    const dashboard = document.getElementById('dashboard-container');
+    const toggleDraggable = document.getElementById('toggle-draggable');
+    let isDragging = false;
+    let startX, startY, offsetX = 0, offsetY = 0, velocityX = 0, velocityY = 0;
+
+    // Enable/disable dragging
+    toggleDraggable.addEventListener('change', () => {
+      dashboard.style.cursor = toggleDraggable.checked ? 'grab' : 'default';
+    });
+
+    // Drag start
+    dashboard.addEventListener('mousedown', (e) => {
+      if (!toggleDraggable.checked) return;
+      isDragging = true;
+      startX = e.clientX - offsetX;
+      startY = e.clientY - offsetY;
+      dashboard.style.cursor = 'grabbing';
+    });
+
+    // Drag move
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      offsetX = e.clientX - startX;
+      offsetY = e.clientY - startY;
+      dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    });
+
+    // Drag end with inertia
+    document.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      dashboard.style.cursor = 'grab';
+    });
+
+    // Lottie animation for bell
+    const bellAnimation = lottie.loadAnimation({
+      container: document.getElementById('bell-animation'),
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: 'https://assets6.lottiefiles.com/private_files/lf30_tmpljmcu.json'
+    });
+
+    document.getElementById('bell-animation').addEventListener('mouseenter', () => bellAnimation.play());
+    document.getElementById('bell-animation').addEventListener('mouseleave', () => bellAnimation.stop());
+  </script>
+</body>
+</html>
