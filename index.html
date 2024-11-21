@@ -7,22 +7,36 @@
   <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f6e9ff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background-color: #f6e9ff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        user-select: none; /* Prevents text selection */
     }
 
     .dashboard {
-      width: 375px;
-      background-color: #fff;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        width: 375px;
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        cursor: grab;
+        transition: box-shadow 0.2s;
+        user-select: none; /* Prevents text selection */
+    }
+
+    .dashboard:active {
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-content {
+        pointer-events: auto;
+        user-select: none; /* Prevents text selection */
     }
 
     .header {
@@ -33,8 +47,9 @@
     }
 
     .header h1 {
-      font-size: 24px;
-      margin: 0;
+        font-size: 24px;
+        margin: 0;
+        user-select: none; /* Prevents text selection */
     }
 
     .header .bell {
@@ -59,10 +74,9 @@
       overflow: hidden;
       cursor: default;
       transition: background-color 0.3s, border 0.3s;
-      user-select: none; /* Prevents text selection */
+      user-select: none;
     }
 
-    /* Original card colors */
     .card:nth-child(1) {
       background-color: #ffd5f7;
     }
@@ -79,18 +93,23 @@
       background-color: #c5ffc5;
     }
 
-    /* Grey out when toggle is on */
     .card.grayed {
       background-color: #d3d3d3 !important;
     }
 
-    /* Dotted border when toggle is on */
-    .card.dotted {
-      border: 2px dashed #666;
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    .dragging {
-      opacity: 0.5;
+    .card.no-hover:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .card.dotted {
+      border: 2px dashed #666;
     }
 
     .project-statistics {
@@ -100,6 +119,7 @@
     .project-statistics h2 {
       font-size: 16px;
       margin-bottom: 10px;
+user-select: none;
     }
 
     .stats-bar {
@@ -125,6 +145,7 @@
       font-size: 20px;
       font-weight: bold;
       display: block;
+user-select: none;
     }
 
     .toggle-container {
@@ -174,55 +195,56 @@
 </head>
 <body>
   <div class="dashboard">
-    <div class="toggle-container">
-      <label>
-        <input type="checkbox" id="edit-toggle">
-        <span></span>
-      </label>
-    </div>
-    <div class="header">
-      <h1>Dashboard</h1>
-      <!-- Replace the bell icon with Lottie animation -->
-      <dotlottie-player 
-        id="bell-animation"
-        class="bell" 
-        src="https://lottie.host/14fccbd6-6ce6-4744-9489-c62dc52ee7ef/dzQiB5ayBl.lottie" 
-        background="transparent" 
-        speed="1"
-        autoplay="false"
-        loop="false">
-      </dotlottie-player>
-    </div>
-    <div class="project-summary">
-      <div class="card">
-        <h2>24</h2>
-        <p>In Progress</p>
+    <div class="dashboard-content">
+      <div class="toggle-container">
+        <label>
+          <input type="checkbox" id="edit-toggle">
+          <span></span>
+        </label>
       </div>
-      <div class="card">
-        <h2>56</h2>
-        <p>In Review</p>
+      <div class="header">
+        <h1>Dashboard</h1>
+        <dotlottie-player 
+          id="bell-animation"
+          class="bell" 
+          src="https://lottie.host/14fccbd6-6ce6-4744-9489-c62dc52ee7ef/dzQiB5ayBl.lottie" 
+          background="transparent" 
+          speed="1"
+          autoplay="false"
+          loop="false">
+        </dotlottie-player>
       </div>
-      <div class="card">
-        <h2>16</h2>
-        <p>On Hold</p>
+      <div class="project-summary">
+        <div class="card">
+          <h2>24</h2>
+          <p>In Progress</p>
+        </div>
+        <div class="card">
+          <h2>56</h2>
+          <p>In Review</p>
+        </div>
+        <div class="card">
+          <h2>16</h2>
+          <p>On Hold</p>
+        </div>
+        <div class="card">
+          <h2>45</h2>
+          <p>Completed</p>
+        </div>
       </div>
-      <div class="card">
-        <h2>45</h2>
-        <p>Completed</p>
+      <div class="project-statistics">
+        <h2>Project Statistics</h2>
+        <div class="stats-bar"></div>
       </div>
-    </div>
-    <div class="project-statistics">
-      <h2>Project Statistics</h2>
-      <div class="stats-bar"></div>
-    </div>
-    <div class="footer">
-      <div>
-        <span>50:25:06</span>
-        <p>Total Working Hours</p>
-      </div>
-      <div>
-        <span>125</span>
-        <p>Total Task Activity</p>
+      <div class="footer">
+        <div>
+          <span>50:25:06</span>
+          <p>Total Working Hours</p>
+        </div>
+        <div>
+          <span>125</span>
+          <p>Total Task Activity</p>
+        </div>
       </div>
     </div>
   </div>
@@ -231,6 +253,11 @@
     const editToggle = document.getElementById('edit-toggle');
     const cards = document.querySelectorAll('.card');
     const bellAnimation = document.getElementById('bell-animation');
+    const dashboard = document.querySelector('.dashboard');
+    const dashboardContent = document.querySelector('.dashboard-content');
+
+    let isDragging = false;
+    let startX, startY, offsetX = 0, offsetY = 0;
 
     // Toggle card appearance and behavior
     editToggle.addEventListener('change', () => {
@@ -241,9 +268,9 @@
         card.style.cursor = isEditable ? 'move' : 'default';
 
         if (isEditable) {
-          card.classList.add('grayed', 'dotted'); // Grey out cards and add dotted border
+          card.classList.add('grayed', 'dotted', 'no-hover'); // Add 'no-hover' to disable hover effect
         } else {
-          card.classList.remove('grayed', 'dotted'); // Restore original colors and remove dotted border
+          card.classList.remove('grayed', 'dotted', 'no-hover'); // Remove 'no-hover' to enable hover effect
         }
       });
     });
@@ -256,6 +283,30 @@
     // Stop Lottie animation on mouse leave
     bellAnimation.addEventListener('mouseleave', () => {
       bellAnimation.stop();
+    });
+
+    // Dragging functionality for dashboard
+    dashboard.addEventListener('mousedown', (event) => {
+      if (event.target.closest('.dashboard-content')) return; // Prevent dragging when clicking on child elements
+      isDragging = true;
+      startX = event.clientX - offsetX;
+      startY = event.clientY - offsetY;
+      dashboard.style.cursor = 'grabbing';
+      dashboardContent.style.pointerEvents = 'none'; // Disable interactions with child elements
+    });
+
+    document.addEventListener('mousemove', (event) => {
+      if (isDragging) {
+        offsetX = event.clientX - startX;
+        offsetY = event.clientY - startY;
+        dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      dashboard.style.cursor = 'grab';
+      dashboardContent.style.pointerEvents = 'auto'; // Restore interactions with child elements
     });
   </script>
 </body>
