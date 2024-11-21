@@ -250,64 +250,102 @@ user-select: none;
   </div>
 
   <script>
-    const editToggle = document.getElementById('edit-toggle');
-    const cards = document.querySelectorAll('.card');
-    const bellAnimation = document.getElementById('bell-animation');
-    const dashboard = document.querySelector('.dashboard');
-    const dashboardContent = document.querySelector('.dashboard-content');
+  const editToggle = document.getElementById('edit-toggle');
+  const cards = document.querySelectorAll('.card');
+  const bellAnimation = document.getElementById('bell-animation');
+  const dashboard = document.querySelector('.dashboard');
+  const dashboardContent = document.querySelector('.dashboard-content');
 
-    let isDragging = false;
-    let startX, startY, offsetX = 0, offsetY = 0;
+  let isDragging = false;
+  let startX, startY, offsetX = 0, offsetY = 0;
+  let velocityX = 0, velocityY = 0;
+  let lastX = 0, lastY = 0;
+  let inertiaFrame;
 
-    // Toggle card appearance and behavior
-    editToggle.addEventListener('change', () => {
-      const isEditable = editToggle.checked;
+  // Toggle card appearance and behavior
+  editToggle.addEventListener('change', () => {
+    const isEditable = editToggle.checked;
 
-      cards.forEach(card => {
-        card.setAttribute('draggable', isEditable);
-        card.style.cursor = isEditable ? 'move' : 'default';
+    cards.forEach(card => {
+      card.setAttribute('draggable', isEditable);
+      card.style.cursor = isEditable ? 'move' : 'default';
 
-        if (isEditable) {
-          card.classList.add('grayed', 'dotted', 'no-hover'); // Add 'no-hover' to disable hover effect
-        } else {
-          card.classList.remove('grayed', 'dotted', 'no-hover'); // Remove 'no-hover' to enable hover effect
-        }
-      });
-    });
-
-    // Play Lottie animation on hover
-    bellAnimation.addEventListener('mouseenter', () => {
-      bellAnimation.play();
-    });
-
-    // Stop Lottie animation on mouse leave
-    bellAnimation.addEventListener('mouseleave', () => {
-      bellAnimation.stop();
-    });
-
-    // Dragging functionality for dashboard
-    dashboard.addEventListener('mousedown', (event) => {
-      if (event.target.closest('.dashboard-content')) return; // Prevent dragging when clicking on child elements
-      isDragging = true;
-      startX = event.clientX - offsetX;
-      startY = event.clientY - offsetY;
-      dashboard.style.cursor = 'grabbing';
-      dashboardContent.style.pointerEvents = 'none'; // Disable interactions with child elements
-    });
-
-    document.addEventListener('mousemove', (event) => {
-      if (isDragging) {
-        offsetX = event.clientX - startX;
-        offsetY = event.clientY - startY;
-        dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      if (isEditable) {
+        card.classList.add('grayed', 'dotted', 'no-hover');
+      } else {
+        card.classList.remove('grayed', 'dotted', 'no-hover');
       }
     });
+  });
 
-    document.addEventListener('mouseup', () => {
+  // Play Lottie animation on hover
+  bellAnimation.addEventListener('mouseenter', () => {
+    bellAnimation.play();
+  });
+
+  bellAnimation.addEventListener('mouseleave', () => {
+    bellAnimation.stop();
+  });
+
+  // Dragging functionality with inertia
+  dashboard.addEventListener('mousedown', (event) => {
+    if (event.target.closest('.dashboard-content')) return; 
+    isDragging = true;
+    startX = event.clientX - offsetX;
+    startY = event.clientY - offsetY;
+    lastX = event.clientX;
+    lastY = event.clientY;
+    dashboard.style.cursor = 'grabbing';
+    dashboardContent.style.pointerEvents = 'none'; 
+
+    // Cancel inertia animation if dragging starts again
+    cancelAnimationFrame(inertiaFrame);
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    if (isDragging) {
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+
+      offsetX = currentX - startX;
+      offsetY = currentY - startY;
+
+      velocityX = currentX - lastX;
+      velocityY = currentY - lastY;
+
+      lastX = currentX;
+      lastY = currentY;
+
+      dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
       isDragging = false;
       dashboard.style.cursor = 'grab';
-      dashboardContent.style.pointerEvents = 'auto'; // Restore interactions with child elements
-    });
-  </script>
+      dashboardContent.style.pointerEvents = 'auto';
+
+      // Start inertia
+      applyInertia();
+    }
+  });
+
+  function applyInertia() {
+    velocityX *= 0.95; // Deceleration factor for X
+    velocityY *= 0.95; // Deceleration factor for Y
+
+    offsetX += velocityX;
+    offsetY += velocityY;
+
+    dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+    // Continue animation until velocity is negligible
+    if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+      inertiaFrame = requestAnimationFrame(applyInertia);
+    }
+  }
+</script>
+
 </body>
 </html>
