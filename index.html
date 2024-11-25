@@ -331,20 +331,42 @@ user-select: none;
     }
   });
 
-  function applyInertia() {
+ function applyInertia() {
+    const dashboardRect = dashboard.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
     velocityX *= 0.95; // Deceleration factor for X
     velocityY *= 0.95; // Deceleration factor for Y
 
     offsetX += velocityX;
     offsetY += velocityY;
 
+    // Check for edges and apply bounce effect
+    if (dashboardRect.left + offsetX < 0) {
+        offsetX = -dashboardRect.left; // Align to the left edge
+        velocityX = -velocityX * 0.7; // Reverse velocity with damping
+    } else if (dashboardRect.right + offsetX > viewportWidth) {
+        offsetX = viewportWidth - dashboardRect.right; // Align to the right edge
+        velocityX = -velocityX * 0.7;
+    }
+
+    if (dashboardRect.top + offsetY < 0) {
+        offsetY = -dashboardRect.top; // Align to the top edge
+        velocityY = -velocityY * 0.7;
+    } else if (dashboardRect.bottom + offsetY > viewportHeight) {
+        offsetY = viewportHeight - dashboardRect.bottom; // Align to the bottom edge
+        velocityY = -velocityY * 0.7;
+    }
+
     dashboard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 
     // Continue animation until velocity is negligible
     if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
-      inertiaFrame = requestAnimationFrame(applyInertia);
+        inertiaFrame = requestAnimationFrame(applyInertia);
     }
-  }
+}
+
 </script>
 
 </body>
